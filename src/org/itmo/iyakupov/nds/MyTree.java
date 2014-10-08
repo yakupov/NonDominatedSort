@@ -19,8 +19,8 @@ public class MyTree {
 		return treeImpl;
 	}
 	
-	protected boolean changed = true;
-	protected boolean deleted = false;
+	//protected boolean changed = true;
+	//protected boolean deleted = false;
 	/*
 	@Deprecated
 	public boolean isDeleted() {
@@ -127,7 +127,7 @@ public class MyTree {
 	protected boolean deleteDominated(Integer[] fitnesses,
 			List<Integer> factorStack,
 			List<Integer[]> results) {
-		changed = true;
+		//changed = true;
 		MyStack<Integer> localStack = new MyStack<Integer>(factorStack);
 
 		//System.err.println("--------- exec dd recursive, stack = " + Arrays.toString(factorStack.toArray()));
@@ -200,7 +200,7 @@ public class MyTree {
 		if (lt && !gt) { //domination
 			Integer[] currResult = factorStack.toArray(new Integer[factorStack.size()]);
 			results.add(currResult);
-			deleted = true;
+			//deleted = true;
 			return true;
 		}
 		return false;
@@ -219,7 +219,7 @@ public class MyTree {
 	}
 	
 	protected void add(Integer[] newFitnesses, int currFactorIndex) {
-		changed = true;
+		//changed = true;
 		boolean last = (currFactorIndex == newFitnesses.length - 1);
 		if (last) {
 			if (!treeImpl.keySet().contains(newFitnesses[currFactorIndex])) {
