@@ -28,5 +28,8 @@ public class ArrayOfTrees {
 		for (int i = 0; i < ranks.size(); ++i) {
 			DomStatus dominates = ranks.get(i).checkPoint(fitnesses); 
 		}
+		//TODO
+		//FIXME
+		return 0;
 	}
 }

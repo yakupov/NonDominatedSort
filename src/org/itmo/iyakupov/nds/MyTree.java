@@ -1,14 +1,21 @@
 package org.itmo.iyakupov.nds;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
-import java.util.Stack;
 import java.util.TreeMap;
 
+import org.itmo.iyakupov.nds.util.MyStack;
+
 public class MyTree {
-	protected NavigableMap<Integer, MyTree> treeImpl = new TreeMap<Integer, MyTree>();
+	protected NavigableMap<Integer, MyTree> treeImpl;
+	
+	public MyTree() {
+		treeImpl = new TreeMap<Integer, MyTree>();
+	}
+	
 	public NavigableMap<Integer, MyTree> getTreeImpl() {
 		return treeImpl;
 	}
@@ -16,15 +23,14 @@ public class MyTree {
 	protected boolean changed = true;
 	protected boolean deleted = false;
 	public boolean isDeleted() {
-		if (treeImpl == null) //leaf
-			return deleted;
-		
-		if (!changed) //Not leaf, but subtrees unchanged
+		if (!changed) //subtrees unchanged
 			return deleted;
 		else { //changed
 			changed = false;
 			for (Entry<Integer, MyTree> e : treeImpl.entrySet()) {
-				if (!e.getValue().isDeleted())
+				if (e.getValue() == null) //leaf
+					return deleted; 
+				else if (!e.getValue().isDeleted()) //not leaf, exists non-deleted child
 					return deleted = false;
 			}
 			return deleted = true;
@@ -109,114 +115,123 @@ public class MyTree {
 		}
 	}
 
-	
-	protected List<int[]> deleteDominated(int[] fitnesses) {
-		List<int[]> dominated = new ArrayList<int[]>();
-		Stack<Integer> factorStack = new Stack<Integer>();
+	protected List<Integer[]> deleteDominated(Integer[] fitnesses) {
+		List<Integer[]> dominated = new ArrayList<Integer[]>();
+		MyStack<Integer> factorStack = new MyStack<Integer>();
 		
-		Entry<Integer, MyTree> lowerOrEq = treeImpl.floorEntry(fitnesses[0]);
-		boolean wasKilled = true;
-		while (wasKilled) {
-			while (lowerOrEq != null && lowerOrEq.getValue().isDeleted())
-				lowerOrEq = treeImpl.floorEntry(lowerOrEq.getKey());
-			if (lowerOrEq != null) {
-				factorStack.clear();
-				factorStack.push(lowerOrEq.getKey());
-				wasKilled = deleteDominated(lowerOrEq, fitnesses, factorStack, dominated);
-				//TODO: process
-			}
-		}
-		
-		Entry<Integer, MyTree> upper = treeImpl.higherEntry(fitnesses[0]);
-		wasKilled = true;
-		while (wasKilled) {
-			while (upper != null && upper.getValue().isDeleted())
-				upper = treeImpl.higherEntry(upper.getKey());
-			if (upper != null) {
-				factorStack.clear();
-				factorStack.push(upper.getKey());
-				wasKilled = deleteDominated(upper, fitnesses, factorStack, dominated);
-				//TODO: process
-			}
-		}
-		
+		deleteDominated(fitnesses, factorStack, dominated);
 		return dominated;
 	}
 	
-	protected boolean deleteDominated(Entry<Integer, MyTree> currPoint, 
-			int[] fitnesses,
-			Stack<Integer> factorStack, 
-			List<int[]> results) {
+	protected boolean deleteDominated(Integer[] fitnesses,
+			List<Integer> factorStack,
+			List<Integer[]> results) {
+		changed = true;
+		MyStack<Integer> localStack = new MyStack<Integer>(factorStack);
+
+		System.err.println("--------- exec dd recursive, stack = " + Arrays.toString(factorStack.toArray()));
 		
-		Stack<Integer> localStack = (Stack<Integer>) factorStack.clone();
-		if (currPoint.getValue() != null) {
-			Entry<Integer, MyTree> lowerOrEq = currPoint.getValue().getTreeImpl().floorEntry(fitnesses[0]);
-			boolean wasKilled = true;
-			while (wasKilled) {
-				while (lowerOrEq != null && lowerOrEq.getValue().isDeleted())
-					lowerOrEq = currPoint.getValue().getTreeImpl().floorEntry(lowerOrEq.getKey());
-				if (lowerOrEq != null) {
-					localStack.push(lowerOrEq.getKey());
-					//TODO: unmodifiable
-					wasKilled = deleteDominated(lowerOrEq, fitnesses, factorStack, results);
-					if (wasKilled)
-						currPoint.getValue().getTreeImpl().remove(lowerOrEq.getKey());
-					localStack.pop();
+		boolean last = (factorStack.size() == fitnesses.length - 1); //FIXME maybe
+		//Assert that values in tree are null
+
+		Entry<Integer, MyTree> lowerOrEq = treeImpl.floorEntry(fitnesses[factorStack.size()]);
+		boolean wasKilled = true;
+		while (wasKilled) {
+			wasKilled = false;
+			while (lowerOrEq != null && lowerOrEq.getValue() != null && lowerOrEq.getValue().isDeleted())
+				lowerOrEq = treeImpl.floorEntry(lowerOrEq.getKey());
+			if (lowerOrEq != null) {
+				localStack.push(lowerOrEq.getKey());
+				if (!last)
+					wasKilled = lowerOrEq.getValue().deleteDominated(fitnesses, localStack, results);
+				else 
+					wasKilled = tryToKillLast(fitnesses, localStack, results);				
+				if (wasKilled) {
+					treeImpl.remove(lowerOrEq.getKey()); //TODO: maybe lazy
+					lowerOrEq = treeImpl.higherEntry(fitnesses[factorStack.size()]);
 				}
-			}
-			
-			Entry<Integer, MyTree> upper = currPoint.getValue().getTreeImpl().higherEntry(fitnesses[0]);
-			wasKilled = true;
-			while (wasKilled) {
-				while (upper != null && upper.getValue().isDeleted())
-					upper = currPoint.getValue().getTreeImpl().higherEntry(upper.getKey());
-				if (upper != null) {
-					localStack.push(upper.getKey());
-					//TODO: unmodifiable
-					wasKilled = deleteDominated(upper, fitnesses, factorStack, results);
-					if (wasKilled)
-						currPoint.getValue().getTreeImpl().remove(upper.getKey());
-					localStack.pop();
-				}
-			}
-			
-			if (currPoint.getValue().getTreeImpl().size() == 0)
-				return true;
-			else
-				return false;
-		} else { //leaf
-			boolean lt = false;
-			boolean gt = false;
-			for (int i = 0; i < factorStack.size(); ++i) {
-				if (fitnesses[i] > factorStack.get(i)) {
-					gt = true;
-				} else if (fitnesses[i] < factorStack.get(i)) {
-					lt = true;
-				}
-			}
-			if (lt && !gt) { //domination
-				//TODO: prepare array, add to results
-				//TODO !!!!!!!!
-				//TODO: MyStack extends ArrayLis
-				//TODO !!!!!!!!
+				localStack.pop();
 			}
 		}
 		
+		Entry<Integer, MyTree> upper = treeImpl.higherEntry(fitnesses[factorStack.size()]);
+		wasKilled = true;
+		while (wasKilled) {
+			wasKilled = false;
+			while (upper != null && upper.getValue() != null && upper.getValue().isDeleted())
+				upper = treeImpl.higherEntry(upper.getKey());
+			if (upper != null) {
+				localStack.push(upper.getKey());
+				if (!last)
+					wasKilled = upper.getValue().deleteDominated(fitnesses, localStack, results);
+				else 
+					wasKilled = tryToKillLast(fitnesses, localStack, results);
+				if (wasKilled) {
+					treeImpl.remove(upper.getKey()); //TODO: maybe lazy
+					upper = treeImpl.higherEntry(fitnesses[factorStack.size()]);
+				}
+				localStack.pop();
+			}
+		}
+
+		if (getTreeImpl().size() == 0)
+			return true;
+		else
+			return false;
+	}
+	
+	protected boolean tryToKillLast(Integer[] fitnesses,
+			MyStack<Integer> factorStack,
+			List<Integer[]> results) {
+		assert(factorStack.size() == fitnesses.length);
+		System.err.println("------ try to kill last, stack = " + Arrays.toString(factorStack.toArray()));
+		
+		boolean lt = false;
+		boolean gt = false;
+		for (int i = 0; i < factorStack.size(); ++i) {
+			if (fitnesses[i] > factorStack.get(i)) {
+				gt = true;
+			} else if (fitnesses[i] < factorStack.get(i)) {
+				lt = true;
+			}
+		}					
+		
+		if (lt && !gt) { //domination
+			Integer[] currResult = factorStack.toArray(new Integer[factorStack.size()]);
+			results.add(currResult);
+			deleted = true;
+			return true;
+		}
+		return false;
 	}
 	
 	
 	/**
-	 * Assuming that dominatesSomebody(fitnesses) == DomStatus.DOMINATES
+	 * Assuming that dominatesSomebody(fitnesses) == DomStatus.DOMINATES or it's first level
 	 * @param fitnesses - new point.
 	 */
-	public List<int[]> add(int[] fitnesses) {
-		//return deleteDominated();
+	public List<Integer[]> add(Integer[] fitnesses) {
+		List<Integer[]> dominated = deleteDominated(fitnesses);
+		System.err.println("------- dominated deleted - OK");
+		add(fitnesses, 0);
+		return dominated;
 	}
 	
-
-	protected void add(Entry<Integer, MyTree> currPoint, 
-			int[] newFitnesses, 
-			int currFactorIndex) {
-		
+	protected void add(Integer[] newFitnesses, int currFactorIndex) {
+		changed = true;
+		boolean last = (currFactorIndex == newFitnesses.length - 1);
+		if (last) {
+			if (!treeImpl.keySet().contains(newFitnesses[currFactorIndex])) {
+				treeImpl.put(newFitnesses[currFactorIndex], null);
+			}
+		} else {
+			if (treeImpl.keySet().contains(newFitnesses[currFactorIndex])) {
+				treeImpl.get(newFitnesses[currFactorIndex]).add(newFitnesses, currFactorIndex + 1);
+			} else {
+				MyTree newTree = new MyTree();
+				treeImpl.put(newFitnesses[currFactorIndex], newTree);
+				newTree.add(newFitnesses, currFactorIndex + 1);
+			}
+		}
 	}
 }
