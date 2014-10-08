@@ -1,7 +1,6 @@
 package org.itmo.iyakupov.nds;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
@@ -22,6 +21,8 @@ public class MyTree {
 	
 	protected boolean changed = true;
 	protected boolean deleted = false;
+	/*
+	@Deprecated
 	public boolean isDeleted() {
 		if (!changed) //subtrees unchanged
 			return deleted;
@@ -36,15 +37,15 @@ public class MyTree {
 			return deleted = true;
 		}
 	}
-	
+	*/
 	public DomStatus dominatesSomebody(int[] fitnesses) {		
 		Entry<Integer, MyTree> lowerOrEq = treeImpl.floorEntry(fitnesses[0]);
-		while (lowerOrEq != null && lowerOrEq.getValue().isDeleted())
-			lowerOrEq = treeImpl.floorEntry(lowerOrEq.getKey());
+		//while (lowerOrEq != null && lowerOrEq.getValue().isDeleted())
+		//	lowerOrEq = treeImpl.floorEntry(lowerOrEq.getKey());
 		
 		Entry<Integer, MyTree> upper = treeImpl.higherEntry(fitnesses[0]);
-		while (upper != null && upper.getValue().isDeleted())
-			upper = treeImpl.higherEntry(upper.getKey());
+		//while (upper != null && upper.getValue().isDeleted())
+		//	upper = treeImpl.higherEntry(upper.getKey());
 		
 		if (lowerOrEq == null && upper == null) {
 			return DomStatus.DOMINATES;
@@ -82,12 +83,12 @@ public class MyTree {
 
 		if (currComparedPoint.getValue() != null) {
 			Entry<Integer, MyTree> lowerOrEq = currComparedPoint.getValue().getTreeImpl().floorEntry(newFitnesses[0]);
-			while (lowerOrEq != null && lowerOrEq.getValue().isDeleted())
-				lowerOrEq = currComparedPoint.getValue().getTreeImpl().floorEntry(lowerOrEq.getKey());
+			//while (lowerOrEq != null && lowerOrEq.getValue().isDeleted())
+			//	lowerOrEq = currComparedPoint.getValue().getTreeImpl().floorEntry(lowerOrEq.getKey());
 			
 			Entry<Integer, MyTree> upper = currComparedPoint.getValue().getTreeImpl().higherEntry(newFitnesses[0]);
-			while (upper != null && upper.getValue().isDeleted())
-				upper = currComparedPoint.getValue().getTreeImpl().higherEntry(upper.getKey());
+			//while (upper != null && upper.getValue().isDeleted())
+			//	upper = currComparedPoint.getValue().getTreeImpl().higherEntry(upper.getKey());
 			
 			if (lowerOrEq != null || upper != null) {
 				if (lowerOrEq == null) {
@@ -129,7 +130,7 @@ public class MyTree {
 		changed = true;
 		MyStack<Integer> localStack = new MyStack<Integer>(factorStack);
 
-		System.err.println("--------- exec dd recursive, stack = " + Arrays.toString(factorStack.toArray()));
+		//System.err.println("--------- exec dd recursive, stack = " + Arrays.toString(factorStack.toArray()));
 		
 		boolean last = (factorStack.size() == fitnesses.length - 1); //FIXME maybe
 		//Assert that values in tree are null
@@ -138,8 +139,8 @@ public class MyTree {
 		boolean wasKilled = true;
 		while (wasKilled) {
 			wasKilled = false;
-			while (lowerOrEq != null && lowerOrEq.getValue() != null && lowerOrEq.getValue().isDeleted())
-				lowerOrEq = treeImpl.floorEntry(lowerOrEq.getKey());
+			//while (lowerOrEq != null && lowerOrEq.getValue() != null && lowerOrEq.getValue().isDeleted())
+			//	lowerOrEq = treeImpl.floorEntry(lowerOrEq.getKey());
 			if (lowerOrEq != null) {
 				localStack.push(lowerOrEq.getKey());
 				if (!last)
@@ -158,8 +159,8 @@ public class MyTree {
 		wasKilled = true;
 		while (wasKilled) {
 			wasKilled = false;
-			while (upper != null && upper.getValue() != null && upper.getValue().isDeleted())
-				upper = treeImpl.higherEntry(upper.getKey());
+			//while (upper != null && upper.getValue() != null && upper.getValue().isDeleted())
+			//	upper = treeImpl.higherEntry(upper.getKey());
 			if (upper != null) {
 				localStack.push(upper.getKey());
 				if (!last)
@@ -184,7 +185,7 @@ public class MyTree {
 			MyStack<Integer> factorStack,
 			List<Integer[]> results) {
 		assert(factorStack.size() == fitnesses.length);
-		System.err.println("------ try to kill last, stack = " + Arrays.toString(factorStack.toArray()));
+		//System.err.println("------ try to kill last, stack = " + Arrays.toString(factorStack.toArray()));
 		
 		boolean lt = false;
 		boolean gt = false;

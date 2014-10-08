@@ -9,7 +9,7 @@ public class Tester {
 		MyTree mt = new MyTree();
 
 		Integer[][] testData = new Integer[][]{new Integer[]{4, 4}, new Integer[]{2, 6}, 
-				new Integer[]{1, 8}, new Integer[]{4, 2}, new Integer[]{4, 1}};
+				new Integer[]{1, 8}, new Integer[]{2, 2}, new Integer[]{2, 1}};
 		
 		for (Integer[] toAdd : testData) {
 			addAndPrintDominated(mt, toAdd);
