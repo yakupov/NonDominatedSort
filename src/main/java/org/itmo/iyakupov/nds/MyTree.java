@@ -1,9 +1,11 @@
 package org.itmo.iyakupov.nds;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
+import java.util.Random;
 import java.util.TreeMap;
 
 import org.itmo.iyakupov.nds.util.MyStack;
@@ -11,6 +13,7 @@ import org.itmo.iyakupov.nds.util.MyStack;
 public class MyTree {
 	protected NavigableMap<Integer, MyTree> treeImpl;
 	protected List<Integer[]> pending;
+	Random generator = new Random();
 	
 	public MyTree() {
 		treeImpl = new TreeMap<Integer, MyTree>();
@@ -20,8 +23,26 @@ public class MyTree {
 		return treeImpl;
 	}
 	
+	public Integer[] getRandPoint(ArrayList<Integer> al) {
+		if (al == null)
+			al = new ArrayList<Integer>();
+		Integer randInt = treeImpl.keySet().
+				toArray(new Integer[treeImpl.size()])[generator.nextInt(treeImpl.size())];
+		al.add(randInt);
+		MyTree next = treeImpl.get(randInt);
+		if (next != null)
+			return next.getRandPoint(al);
+		else
+			return al.toArray(new Integer[al.size()]);
+	}
+	
 	public void setPending(List<Integer[]> pending) {
-		this.pending = pending;
+		if (pending == null)
+			return;
+		if (this.pending != null)
+			Collections.copy(this.pending, pending);
+		else
+			this.pending = pending;
 	}
 	
 	public List<Integer[]> processPending() {
@@ -31,6 +52,7 @@ public class MyTree {
 			for (Integer[] fitnesses: pending) {
 				factorStack.clear();
 				deleteDominated(fitnesses, factorStack, dominated);
+				add(fitnesses, 0);
 			}
 			pending = null;
 			return dominated;
@@ -147,7 +169,7 @@ public class MyTree {
 				if (!last)
 					wasKilled = lowerOrEq.getValue().deleteDominated(fitnesses, localStack, results);
 				else 
-					wasKilled = tryToKillLast(fitnesses, localStack, results);				
+					wasKilled = processLastFactor(fitnesses, localStack, results);				
 				if (wasKilled) {
 					treeImpl.remove(lowerOrEq.getKey()); //TODO: maybe lazy
 					lowerOrEq = treeImpl.higherEntry(fitnesses[factorStack.size()]);
@@ -165,7 +187,7 @@ public class MyTree {
 				if (!last)
 					wasKilled = upper.getValue().deleteDominated(fitnesses, localStack, results);
 				else 
-					wasKilled = tryToKillLast(fitnesses, localStack, results);
+					wasKilled = processLastFactor(fitnesses, localStack, results);
 				if (wasKilled) {
 					treeImpl.remove(upper.getKey()); //TODO: maybe lazy
 					upper = treeImpl.higherEntry(fitnesses[factorStack.size()]);
@@ -180,7 +202,14 @@ public class MyTree {
 			return false;
 	}
 	
-	protected boolean tryToKillLast(Integer[] fitnesses,
+/**
+ * 
+ * @param fitnesses
+ * @param factorStack
+ * @param results - list of dominated points
+ * @return true if deleted
+ */
+	protected boolean processLastFactor(Integer[] fitnesses,
 			MyStack<Integer> factorStack,
 			List<Integer[]> results) {
 		assert(factorStack.size() == fitnesses.length);
@@ -214,6 +243,11 @@ public class MyTree {
 		return dominated;
 	}
 	
+	/**
+	 * Add but don't delete dominated points
+	 * @param newFitnesses
+	 * @param currFactorIndex
+	 */
 	protected void add(Integer[] newFitnesses, int currFactorIndex) {
 		boolean last = (currFactorIndex == newFitnesses.length - 1);
 		if (last) {
