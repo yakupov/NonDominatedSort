@@ -1,7 +1,6 @@
 package org.itmo.iyakupov.nds;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
@@ -13,7 +12,7 @@ import org.itmo.iyakupov.nds.util.MyStack;
 public class MyTree {
 	protected NavigableMap<Integer, MyTree> treeImpl;
 	protected List<Integer[]> pending;
-	Random generator = new Random();
+	protected Random generator = new Random();
 	
 	public MyTree() {
 		treeImpl = new TreeMap<Integer, MyTree>();
@@ -40,7 +39,7 @@ public class MyTree {
 		if (pending == null)
 			return;
 		if (this.pending != null)
-			Collections.copy(this.pending, pending);
+			this.pending.addAll(pending);
 		else
 			this.pending = pending;
 	}

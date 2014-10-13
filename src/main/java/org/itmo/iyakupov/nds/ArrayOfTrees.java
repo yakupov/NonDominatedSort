@@ -6,29 +6,12 @@ import java.util.List;
 import java.util.Random;
 
 public class ArrayOfTrees {
-	public static class Result {
-		public int rank;
-		public Integer[] point;
-		public Result(int rank, Integer[] point) {
-			super();
-			this.rank = rank;
-			this.point = point;
-		}
-	}
+	protected final boolean debug = false;
 	
-	protected ArrayList<MyTree> ranks = new ArrayList<MyTree>();
-	protected int lastCalculatedRank = 0; // index in arraylist
-	Random generator = new Random();
-	/*
-	public MyTree get(int rank) {
-		if (rank < 1)
-			throw new IllegalArgumentException("No rank " + rank);
-		if (ranks.size() < rank) {
-			return null;
-		}
-		return ranks.get(rank - 1);
-	}
-	*/
+	protected List<MyTree> ranks = new ArrayList<MyTree>();
+	protected int lastCalculatedRank = 0; // index in list
+	protected Random generator = new Random();
+
 	public Result getRandomPoint() {
 		int rank = generator.nextInt(ranks.size());
 		for (int i = lastCalculatedRank + 1; i <= rank; ++i) {
@@ -60,11 +43,13 @@ public class ArrayOfTrees {
 			else if (domStatus != DomStatus.DOMINATED) {
 				List<Integer[]> pending = ranks.get(i).add(fitnesses);
 				
-				System.out.println("Adding non-dominated point:" + Arrays.toString(fitnesses));
-				if (pending != null && !pending.isEmpty()) {
-					System.out.println("it has dominated:");
-					for (Integer[] dead : pending) {
-						System.out.println(Arrays.toString(dead));
+				if (debug) {
+					System.out.println("Adding non-dominated point:" + Arrays.toString(fitnesses));
+					if (pending != null && !pending.isEmpty()) {
+						System.out.println("it has dominated:");
+						for (Integer[] dead : pending) {
+							System.out.println(Arrays.toString(dead));
+						}
 					}
 				}
 								
