@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 public class ArrayOfTrees {
-	protected final boolean debug = false;
+	protected final boolean debug = true;
 	
 	protected List<MyTree> ranks = new ArrayList<MyTree>();
 	protected int lastCalculatedRank = 0; // index in list

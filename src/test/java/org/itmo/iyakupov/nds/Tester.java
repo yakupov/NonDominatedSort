@@ -4,21 +4,23 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.itmo.iyakupov.nds.gen.ITestDataGen;
+import org.itmo.iyakupov.nds.gen.Point2DDiagGenerator;
 import org.itmo.iyakupov.nds.gen.Point2DTestDataGen;
 
 
 public class Tester {
 
 	public static void main(String[] args) {
-		for (int i = 0; i < 10; ++i) {
+		final int nRuns = 1;
+		for (int i = 0; i < nRuns; ++i) {
 			long start = System.nanoTime();
-			testDebAndMy(false);
+			testDebAndMy(false, new Point2DDiagGenerator());
 			long fin = System.nanoTime();
 			double time = (double)(fin - start) / 1000.0;
 			System.out.println("Deb works s: " + time);
 			
 			start = System.nanoTime();
-			testDebAndMy(true);
+			testDebAndMy(true, new Point2DDiagGenerator());
 			fin = System.nanoTime();
 			time = (double)(fin - start) / 1000.0;
 			System.out.println("iWork s: " + time);			
@@ -44,8 +46,9 @@ public class Tester {
 	 * true == my
 	 * @param mode
 	 */
-	public static void testDebAndMy(boolean mode) {
-		ITestDataGen<Integer[][]> tdg = new Point2DTestDataGen();
+	public static void testDebAndMy(boolean mode, ITestDataGen<Integer[][]> tdg) {
+		System.gc();
+		System.gc();
 		final int MAX = 10000;
 		Integer[][] tests = tdg.generate(MAX, MAX);
 		

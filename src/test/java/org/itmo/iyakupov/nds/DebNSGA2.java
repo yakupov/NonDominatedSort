@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-
+/*
+ * RTFM: link-cut trees
+ * tree contraction
+ * 
+ * Если таблица значений - ориентироваться на 10^9
+ */
 public class DebNSGA2 {
 	protected static class Individual {
 		Integer[] impl;

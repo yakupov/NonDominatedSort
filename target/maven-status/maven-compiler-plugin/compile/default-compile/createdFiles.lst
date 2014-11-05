@@ -3,6 +3,7 @@ org/itmo/iyakupov/nds/Tester.class
 org/itmo/iyakupov/nds/util/MyStack.class
 org/itmo/iyakupov/nds/trash/TreeNode.class
 org/itmo/iyakupov/nds/trash/RedBlackBST.class
+org/itmo/iyakupov/nds/gen/Point2DDiagGenerator.class
 org/itmo/iyakupov/nds/DomStatus.class
 org/itmo/iyakupov/nds/MyTree.class
 org/itmo/iyakupov/nds/trash/RedBlackBST$Node.class
