@@ -1,0 +1,52 @@
+package org.itmo.iyakupov.nds;
+
+public class Int2DIndividual {
+	private int x1, x2;
+	
+	public Int2DIndividual(int x1, int x2) {
+		super();
+		this.x1 = x1;
+		this.x2 = x2;
+	}
+
+	public int getX1() {
+		return x1;
+	}
+
+	public int getX2() {
+		return x2;
+	}
+
+	public int compareX1(Int2DIndividual o) {
+		return Integer.compare(x1, o.x1);
+	}
+
+	public int compareX2(Int2DIndividual o) {
+		return Integer.compare(x2, o.x2);
+	}
+	
+	/**
+	 * not normalized
+	 * @param o
+	 * @return
+	 */
+	public int compareDom(Int2DIndividual o) {
+		int xc = Integer.compare(x1, o.x1);
+		int yc = Integer.compare(x2, o.x2);
+		return xc + yc;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof Int2DIndividual) {
+			Int2DIndividual oo = (Int2DIndividual)o;
+			return oo.x1 == x1 && oo.x2 == x2;
+		}
+		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("ind %d %d", x1, x2);
+	}
+}

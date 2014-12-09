@@ -1,0 +1,183 @@
+%%This is a very basic article template.
+%%There is just one section and two subsections.
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+
+\newtheorem{lemma1}{Lemma}
+\newtheorem{th1}{Theorem}
+
+
+\begin{document}
+
+\section{Algorithm Description}\label{sec-algo}
+In this section, the algorithm is described.
+The population is being stored in an array of \textit{Ranks}.
+Each \textit{Rank} contains set of \textit{Individuals} of a certain rank. 
+This rank equals to the index of the corresponding \textit{Rank} in the
+population array.
+
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\Function{DetermineRank}{P, $p_n$}
+	\State{$R_n \gets 0$}
+	\For{$p \in P$} 
+		\If{$x_p \le x_{p_n} \wedge y_p \le y_{p_n}$}
+	        \State{$R_n \gets max(R_n, Rg(p) + 1)$}
+	    \EndIf
+	\EndFor
+	\State\Return $R_n$
+\EndFunction
+\end{algorithmic}
+\caption{The function \textsc{DetermineRank}. It calculates rank of the new
+point $p_n$ basing the ranks of points from $p \in P$ who dominate $p_n$}
+\label{DetermineRank}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\Procedure{AddPoint}{$P$, $p_n$}
+	\State{$R_n \gets \textsc{DetermineRank}(P, p_n$)}
+	\If{$p_n \in P[R_n]$} \Return
+    \Else
+        \State{$i \gets 0$}
+       	\State{$p_0 \gets p_n$} 
+       	\State{$C_{-1} \gets \{p_n\}$}
+       	\State{$C_0 \gets \{p: Rg(p) = R_n \wedge p_n \prec p\}$}
+       	\While{$|C_i| \neq 0$}
+      	 	\State{$P[R_n + i] \gets \textsc{CutTree}(P[R_n + i], C_i)$}
+      	 	\State{$P[R_n + i] \gets \textsc{AddTree}(P[R_n + i], C_{i-1})$}
+      	 	\State{$p_{i+1} \gets (\min{c \in C_i}x_c, \min{c \in C_i}y_c)$}
+      	 	\State{$i \gets i + 1$}
+      	 	\State{$C_i \gets \{p: Rg(p) = R_n + i \wedge p_i \prec p\}$}
+        \EndWhile
+        \State{$P[R_n + i] \gets \textsc{AddTree}(P[R_n + i], C_{i-1})$}
+    \EndIf
+\EndProcedure
+\end{algorithmic}
+\caption{The procedure \textsc{AddPoint}. On each step it splits tree of
+current rank into two parts: points, that should change rank ($C_i$) and points
+that should not. Then points, that have changed their rank on the previous steps,
+are being added to the remainder. The proof is given in Theorem \ref{th1}}
+\label{AddPoint}
+\end{algorithm}
+
+
+\section{Proof}
+\begin{lemma1}
+If:
+\begin{equation} \label{eq:cdefrg} C = \{c: Rg(c) = R\}, \end{equation}
+\begin{equation} \label{eq:p0def} p_0 = (min_{c \in C} c_x; min_{c \in C} c_y),
+\end{equation}
+\begin{equation} \label{eq:cdef} \nexists p': Rg(p') = R \quad \textrm{and}
+\quad x_{p'} \in [min_{c \in C} c_x; max_{c \in C} c_x].
+\end{equation}
+Then:
+\begin{equation}
+\label{eq:rankd} D_{p_0} = \{d: p_0 \prec d \wedge Rg(d) > R\} =
+D_C = \cup_{c \in C} \{d: c \prec d\}
+\end{equation}
+Where $D_e$ is a set of elements, dominated by $e$ (or by any member of
+$e$, if this is a set).
+\end{lemma1}
+
+\begin{proof}
+1. By definition of $p_0$,
+$$ p_0 \preceq c, \forall c \in C $$
+That leads, by the transitivity of $\preceq$, to the following:
+$$ c \in C \prec d \Rightarrow p_0 \prec d $$
+2. Let's suggest the following:
+\begin{align}
+	\label{eq:p0dompd} p_0 \prec d, \\
+	\label{eq:nexcdompd} \nexists c \in C: c \prec d.
+\end{align}
+\eqref{eq:p0dompd} can lead to the following cases:
+\begin{enumerate}
+\item $x_{d} = x_{p_0}$, $y_{d} > y_{p_0}$;
+
+According to \eqref{eq:p0def}, $$\exists c_1 \in C: x_{c_1} = x_{p_0}$$
+That means, that $x_{c_1} = x_{d}$. According to \eqref{eq:nexcdompd}, $y_{c_1}
+>= y_{d}$.
+That means, that 
+$$
+d \preceq c_1 \Rightarrow Rg(c_1) >= Rg(d)>^{\eqref{eq:rankd}} R
+$$
+This contradicts with \eqref{eq:cdefrg}.
+\item $x_{d} > x_{p_0}$, $y_{d} = y_{p_0}$;
+
+The proof is the same as for the previous case.
+\item $x_{d} > x_{p_0}$, $y_{d} > y_{p_0}$;
+$$
+Rg(d) >^{\eqref{eq:rankd}} R \Rightarrow \exists p \notin C: Rg(p) = R, p \prec
+d
+$$
+Let's state the following:
+$$
+c_1: c_1 \in C, x_{c_1} = x_{p_0}
+$$
+$$
+c_2: c_2 \in C, y_{c_1} = y_{p_0}
+$$
+According to \eqref{eq:cdef}, 
+$$
+x_p < x_0 \vee y_p < y_0
+$$
+which means that $x_p < x_{c_1}$, and, according to the definition of rank, $y_p
+> y_{c_1}$.
+But $x_{d} > x_{p_0} = x_{c_1}$. Therefore:
+$$ 
+p \prec d \Rightarrow c_1 \prec d
+$$
+It contradicts with \eqref{eq:nexcdompd}.
+The similar proof is applicable to $c_2$.
+\end{enumerate}
+\end{proof}
+
+Let's define $Rg(p)$ as rank of $p$ before point addition, and $Rg'(p)$ as rank
+of $p$ after point addition.
+Let's define $R_i$:
+$$ F_i: \{\forall f \in F_i: Rg(f) = F_i, p_i \not \prec f \}$$
+
+\begin{th1}\label{th1}
+Point $n$ was added. $Rg'(n) = R_0$.
+The following statements are applicable for any iteration of point addition
+algorithm:
+\begin{enumerate}
+  \item $ \forall i > 0 : R_i = R_0 + i;$
+  \item $ \exists p_i, C_i: \{\forall c \in C_i: Rg(c) = R_i, p_i \prec c \};$
+  \item $ Rg'(C_i) = R_i + 1;$
+  \item $ Rg'(F_i) = R_i;$
+  \item $ p_{i+1} = (min_{c \in C_i} c_x; min_{c \in C_i} c_y).$
+\end{enumerate}
+\end{th1}
+\begin{proof}
+The proof will be by induction.
+\begin{enumerate}
+  \item Base.
+  \begin{enumerate}
+  	\item $p_0 = n;$
+  	\item $\exists C_0: \{\forall c \in C_0: Rg(c) = R_0, n \prec c \};$
+  	\item $Rg'(C_0) = R_0 + 1 = R_i + 1;$
+  	\item $Rg'(F_0)$ won't be changed;
+  	\item $p_{i + 1} = (min_{c \in C_0} c_x; min_{c \in C_0} c_y).$
+  \end{enumerate}
+  \item Induction step.
+  \begin{enumerate}
+  	\item $ p_{i+1} = (min_{c \in C_i} c_x; min_{c \in C_i} c_y);$
+  	\item $ Rg'(C_i) = R_i \Rightarrow^{lemma1} \forall {d: Rg(d) = R_i, p_i
+  	\prec d: Rg'(d) = Rg(C_i) + 1 = R_i + 1}$;
+  	\item $Rg'(F_i)$ won't be changed.
+  \end{enumerate}
+\end{enumerate}
+\end{proof}
+
+
+\end{document}
+
+
+
