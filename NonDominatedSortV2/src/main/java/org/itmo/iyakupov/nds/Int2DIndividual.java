@@ -1,5 +1,7 @@
 package org.itmo.iyakupov.nds;
 
+import java.util.Arrays;
+
 public class Int2DIndividual {
 	private int x1, x2;
 	
@@ -7,6 +9,13 @@ public class Int2DIndividual {
 		super();
 		this.x1 = x1;
 		this.x2 = x2;
+	}
+	
+	public Int2DIndividual(Integer[] x) {
+		if (x.length != 2)
+			throw new RuntimeException("Can't cast to Int2DIndividual this array: " + Arrays.toString(x));
+		this.x1 = x[0];
+		this.x2 = x[1];
 	}
 
 	public int getX1() {
@@ -43,6 +52,11 @@ public class Int2DIndividual {
 			return oo.x1 == x1 && oo.x2 == x2;
 		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int) (0.5 * (x1 + x2) * (x1 + x2 + 1) + x2);
 	}
 	
 	@Override
