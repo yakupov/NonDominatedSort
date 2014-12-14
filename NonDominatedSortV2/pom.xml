@@ -1,9 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.itmo.iyakupov.nds</groupId>
-  <artifactId>NonDominatedSortV2</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>NonDominatedSortV2</name>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.itmo.iyakupov.nds</groupId>
+	<artifactId>NonDominatedSortV2</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>NonDominatedSortV2</name>
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -23,12 +25,22 @@
 				<executions>
 					<execution>
 						<goals>
-							<goal>exec</goal>
+							<goal>java</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
 					<mainClass>org.itmo.iyakupov.nds.Tester</mainClass>
+					<systemProperties>
+						<systemProperty>
+							<key>printTreaps</key>
+							<value>N</value>
+						</systemProperty>
+						<systemProperty>
+							<key>uniSquareTestDataDim</key>
+							<value>2000</value>
+						</systemProperty>
+					</systemProperties>
 				</configuration>
 			</plugin>
 		</plugins>

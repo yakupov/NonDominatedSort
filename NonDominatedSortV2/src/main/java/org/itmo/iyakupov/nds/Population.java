@@ -28,16 +28,10 @@ public class Population {
 		if (individuals.contains(nInd)) {
 			return;
 		} else {
-			/*
-			for (Int2DIndividual ii: individuals) {
-				System.err.println("popz incl " + ii + " eq " + nInd.equals(ii));
-			}
-			System.err.println("popz add " + nInd);
-			*/
 			individuals.add(nInd);
 		}
 		int rank = determineRank(nInd);
-		System.err.println(rank + "_" + nInd.toString() + "_" + ranks.size());
+		//System.err.println(rank + "_" + nInd.toString() + "_" + ranks.size());
 		Treap nTreap = new Treap(nInd, random.nextInt(), null, null);
 		if (rank >= ranks.size()) {
 			ranks.add(nTreap);
@@ -51,7 +45,7 @@ public class Population {
 					break;
 				}
 				
-				boolean printTreaps = true;
+				boolean printTreaps = "Y".equals(System.getProperty("printTreaps"));
 				printTreap(cNext, printTreaps);
 				printTreap(ranks.get(rank + i), printTreaps);
 
@@ -104,20 +98,58 @@ public class Population {
 		if (individuals.size() == 0)
 			throw new RuntimeException("Can't get random individual from empty population");
 		Int2DIndividual randInd = (Int2DIndividual) individuals.toArray()[random.nextInt(individuals.size())];
-		int r = ranks.size();
+		return new IndWithRank(randInd, detRankOfExPoint(randInd));
+	}
+
+	protected int detRankOfExPoint(Int2DIndividual ind) {
+		int r = ranks.size() - 1;
 		int l = 0;
+		int result = -1;
 		while (l != r) {
 			int curr = (l + r)/2;
-			boolean dominated = ranks.get(curr).dominatedBySomebody(randInd);
-			boolean dominates = ranks.get(curr).dominatesSomebody(randInd);
-			if (!dominates && !dominated)
-				return new IndWithRank(randInd, curr);
-			else if (dominates)
-				r = curr;
-			else 
-				l = curr;
+			if (r == l + 1) {
+				curr = l;
+				boolean dominated = ranks.get(curr).dominatedBySomebody(ind);
+				boolean dominates = ranks.get(curr).dominatesSomebody(ind);
+				if (!dominates && !dominated)
+					return result < 0 ? curr : Math.min(curr, result);
+				
+				curr = r;
+				dominated = ranks.get(curr).dominatedBySomebody(ind);
+				dominates = ranks.get(curr).dominatesSomebody(ind);
+				if (!dominates && !dominated)
+					return result < 0 ? curr : Math.min(curr, result);
+			} else {
+				boolean dominated = ranks.get(curr).dominatedBySomebody(ind);
+				boolean dominates = ranks.get(curr).dominatesSomebody(ind);
+				if (!dominates && !dominated) {
+					result = result < 0 ? curr : Math.min(curr, result);
+					r = curr;
+				} else if (dominates)
+					r = curr;
+				else 
+					l = curr;
+			}
 		}
-		throw new RuntimeException("Can't determine rank for " + randInd.toString());
+		boolean dominated = ranks.get(l).dominatedBySomebody(ind);
+		boolean dominates = ranks.get(l).dominatesSomebody(ind);
+		if (!dominates && !dominated)
+			result = result < 0 ? l : Math.min(l, result);
+		
+		if (result > 0)
+			return result;
+		throw new RuntimeException("Can't determine rank for " + ind.toString());
+	}
+
+	
+	protected int detRankOfExPointDumb(Int2DIndividual ind) {
+		for (int l = 0; l < ranks.size(); ++l) {
+			boolean dominated = ranks.get(l).dominatedBySomebody(ind);
+			boolean dominates = ranks.get(l).dominatesSomebody(ind);
+			if (!dominates && !dominated)
+				return l;
+		}
+		throw new RuntimeException("Can't determine rank for " + ind.toString());
 	}
 	
 	public String toString() {
@@ -129,5 +161,35 @@ public class Population {
 			sb.append('\n');
 		}
 		return sb.toString();
+	}
+	
+	public void validate() {
+		for (int i = 0; i < ranks.size(); ++i) {
+			checkDom(ranks.get(i), i);
+		}
+	}
+	
+	private void checkDom(Treap t, int rk) {
+		if (t == null)
+			return;
+		int cRankCalcd = 0;
+		Int2DIndividual rankDeterminator = null;
+		for (Int2DIndividual ind : individuals) {
+			if (ind != t.x) {
+				if (t.x.compareDom(ind) > 0) { //dominated
+					int newPossibleRank = detRankOfExPoint(ind) + 1;
+					if (newPossibleRank > cRankCalcd) {
+						cRankCalcd = newPossibleRank;
+						rankDeterminator = ind;
+					}
+				}
+			}
+		}
+		if (cRankCalcd != rk) {
+			throw new RuntimeException("Population is sorted incorrectly. Point = " + t.x.toString() + 
+					", rk = " + rk + ", should be = " + cRankCalcd + ", determinator = " + rankDeterminator);
+		}
+		checkDom(t.left, rk);
+		checkDom(t.right, rk);
 	}
 }

@@ -14,11 +14,13 @@ public class DebNSGA2 {
 	protected static class Individual {
 		Integer[] impl;
 		int nDominating;
+		int rank;
 		List<Individual> dominated;
 		
 		public Individual(Integer[] fitnesses) {
 			impl = fitnesses;
 			nDominating = 0;
+			rank = 0;
 			dominated = new ArrayList<Individual>();
 		}
 	}
@@ -47,6 +49,7 @@ public class DebNSGA2 {
 			//System.err.println(pop.get(i).nDominating);
 			if (pop.get(i).nDominating == 0) {
 				addToFront(1, pop.get(i));
+				pop.get(i).rank = 0;
 			}
 		}
 		
@@ -58,6 +61,7 @@ public class DebNSGA2 {
 					dominatedByCurr.nDominating--;
 					if (dominatedByCurr.nDominating == 0) {
 						newFront.add(dominatedByCurr);
+						dominatedByCurr.rank = fronts.size();
 					}
 				}
 			}
@@ -108,5 +112,24 @@ public class DebNSGA2 {
 		}
 		
 		return DomStatus.EQUALS;
+	}
+	
+	
+	public void validate() {
+		for (int i = 0; i < fronts.size(); ++i) {
+			for (Individual cInd: fronts.get(i)) {
+				int cRankCalcd = 0;
+				for (Individual compInd: pop) {
+					if (compInd != cInd) {
+						if (dominates(compInd.impl, cInd.impl) == DomStatus.DOMINATES) {
+							cRankCalcd = Math.max(cRankCalcd, compInd.rank + 1);
+						}
+					}
+				}
+				if (cRankCalcd != i) {
+					throw new RuntimeException("Population is sorted incorrectly");
+				}
+			}
+		}
 	}
 }

@@ -1,25 +1,110 @@
 package org.itmo.iyakupov.nds;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 import org.itmo.iyakupov.nds.gen.ITestDataGen;
+import org.itmo.iyakupov.nds.gen.Point2DCircleFrontsGenerator;
 import org.itmo.iyakupov.nds.gen.Point2DDiagGenerator;
-import org.itmo.iyakupov.nds.gen.Point2DTestDataGen;
+import org.itmo.iyakupov.nds.gen.Point2DParallelFrontsGenerator;
+import org.itmo.iyakupov.nds.gen.Point2DUniSquareGen;
+import org.itmo.iyakupov.nds.gen.Point2DUniStrireXPlusGen;
 
 
 public class Tester {
 
 	public static void main(String[] args) {
-		final int nRuns = 1;
+		//final int nRuns = 1;
 		
 		//test0();
 		//test1();
 		//test2();
 		
-		testRand();
+		testRandSq();
+		testRandPf();
+		testRandCircle();
+		testRandStripe();
+	}
 	
+	
+	private static void testRandPf() {
+		testRandStupid(new Point2DParallelFrontsGenerator(), "parallel fronts");
+	}
+	
+	private static void testRandCircle() {
+		testRandStupid(new Point2DCircleFrontsGenerator(), "circle fronts");
+	}
+	
+	private static void testRandSq() {
+		testRandStupid(new Point2DUniSquareGen(), "square");
 	}
 
+	private static void testRandStupid(ITestDataGen<Integer[][]> gena, String name) {
+		int dim = 10;
+		try {
+			dim = Integer.parseInt(System.getProperty("uniSquareTestDataDim"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Test data (" + name + ") dimension: " + dim);
+		
+		Integer[][] testData = gena.generate(dim, dim);
+		for (int i = 0; i < testData.length; ++i) {
+			System.out.print(Arrays.toString(testData[i]) + ' ');
+		}
+		System.out.println();
+		
+		testGeneric(testData);
+	}
+	
+	private static void testRandStripe() {
+		int dim = 10;
+		try {
+			dim = Integer.parseInt(System.getProperty("uniSquareTestDataDim"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Test data (stripe) dimension: " + dim);
+		
+		final int radius = 10;
+		Integer[][] testData = new Point2DUniStrireXPlusGen(radius).generate(dim, dim);
+		for (int i = 0; i < testData.length; ++i) {
+			System.out.print(Arrays.toString(testData[i]) + ' ');
+		}
+		System.out.println();
+		
+		testGeneric(testData);
+	}
+		
+	private static void testGeneric(Integer[][] testData) {
+		System.gc();
+		System.gc();
+		
+		long start = System.nanoTime();
+		Population pop = new Population();
+		for (Integer[] toAdd : testData) {
+			pop.addPoint(new Int2DIndividual(toAdd));
+		}
+		long finish = System.nanoTime();
+		System.out.println("iWork (s): " + new BigDecimal((finish-start) / 10e9).toPlainString());
+		pop.validate();
+		
+		
+		System.gc();
+		System.gc();
+		
+		start = System.nanoTime();
+		DebENLU popEnlu = new DebENLU();
+		for (Integer[] toAdd : testData) {
+			popEnlu.addPoint(new Int2DIndividual(toAdd));
+		}
+		finish = System.nanoTime();
+		System.out.println("enluWorx (s): " + new BigDecimal((finish-start) / 10e9).toPlainString());
+		popEnlu.validate();
+		//System.err.println(popEnlu.toString());
+	}
+	
+	
 	public static void test0() {
 		Population pop = new Population();
 		Integer[][] testData = new Integer[][]{new Integer[]{4, 4}, new Integer[]{2, 6}, 
@@ -81,22 +166,6 @@ public class Tester {
 		
 		// 30 03; 07 23 31; 25; 65; 66; 78;
 		
-		
-		for (Integer[] toAdd : testData) {
-			pop.addPoint(new Int2DIndividual(toAdd));
-			System.out.println(pop.toString());
-			//printRandomPoint(pop.getRandWithRank());
-		}
-		System.out.println(pop.toString());
-	}
-	
-	public static void testRand() {
-		Population pop = new Population();
-		Integer[][] testData = new Point2DTestDataGen().generate(10, 10);
-		for (int i = 0; i < testData.length; ++i) {
-			System.err.print(Arrays.toString(testData[i]) + ' ');
-		}
-		System.err.println();
 		
 		for (Integer[] toAdd : testData) {
 			pop.addPoint(new Int2DIndividual(toAdd));

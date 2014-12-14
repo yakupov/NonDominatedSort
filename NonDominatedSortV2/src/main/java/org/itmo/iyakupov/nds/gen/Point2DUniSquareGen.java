@@ -1,6 +1,6 @@
 package org.itmo.iyakupov.nds.gen;
 
-public class Point2DTestDataGen implements ITestDataGen<Integer[][]> {
+public class Point2DUniSquareGen implements ITestDataGen<Integer[][]> {
 
 	@Override
 	public Integer[][] generate(int dim, int max) {
