@@ -1,5 +1,3 @@
-%%This is a very basic article template.
-%%There is just one section and two subsections.
 \documentclass{article}
 \usepackage{amssymb}
 \usepackage{amsthm}
@@ -19,8 +17,9 @@
 In this section, the algorithm is described.
 The population is being stored in an array of \textit{Ranks}.
 Each \textit{Rank} contains set of \textit{Individuals} of a certain rank. 
-This rank equals to the index of the corresponding \textit{Rank} in the
-population array.
+This rank equals to the index of the corresponding \textit{Rank} (or
+\textit{non-domination level}) in the population array.
+In this algorithm \textit{Rank} is implemented with a Dekart tree.
 
 \begin{algorithm}[H]
 \begin{algorithmic}[1]
@@ -42,14 +41,18 @@ point $p_n$ basing the ranks of points from $p \in P$ who dominate $p_n$}
 \begin{algorithm}[H]
 \begin{algorithmic}[1]
 \Procedure{AddPoint}{$P$, $p_n$}
-	\State{$R_n \gets \textsc{DetermineRank}(P, p_n$)}
-	\If{$p_n \in P[R_n]$} \Return
+	\If{$p_n \in P$} \Return
     \Else
+    	\State{$R_n \gets \textsc{DetermineRank}(P, p_n$)}    
         \State{$i \gets 0$}
        	\State{$p_0 \gets p_n$} 
        	\State{$C_{-1} \gets \{p_n\}$}
        	\State{$C_0 \gets \{p: Rg(p) = R_n \wedge p_n \prec p\}$}
        	\While{$|C_i| \neq 0$}
+       		\If{$\nexists P[R_n + i]$}
+       			\State{$P[R_n + i] \gets C_i$}
+       			\State\Return
+       		\EndIf
       	 	\State{$P[R_n + i] \gets \textsc{CutTree}(P[R_n + i], C_i)$}
       	 	\State{$P[R_n + i] \gets \textsc{AddTree}(P[R_n + i], C_{i-1})$}
       	 	\State{$p_{i+1} \gets (\min{c \in C_i}x_c, \min{c \in C_i}y_c)$}
@@ -82,7 +85,7 @@ Then:
 \label{eq:rankd} D_{p_0} = \{d: p_0 \prec d \wedge Rg(d) > R\} =
 D_C = \cup_{c \in C} \{d: c \prec d\}
 \end{equation}
-Where $D_e$ is a set of elements, dominated by $e$ (or by any member of
+Where $D_e$ is a set of elements, dominated by $e$ (or at least by one member of
 $e$, if this is a set).
 \end{lemma1}
 
@@ -91,7 +94,7 @@ $e$, if this is a set).
 $$ p_0 \preceq c, \forall c \in C $$
 That leads, by the transitivity of $\preceq$, to the following:
 $$ c \in C \prec d \Rightarrow p_0 \prec d $$
-2. Let's suggest the following:
+2. Let's assume the following:
 \begin{align}
 	\label{eq:p0dompd} p_0 \prec d, \\
 	\label{eq:nexcdompd} \nexists c \in C: c \prec d.
@@ -116,7 +119,7 @@ $$
 Rg(d) >^{\eqref{eq:rankd}} R \Rightarrow \exists p \notin C: Rg(p) = R, p \prec
 d
 $$
-Let's state the following:
+Let's introduce the following variables:
 $$
 c_1: c_1 \in C, x_{c_1} = x_{p_0}
 $$
@@ -176,6 +179,39 @@ The proof will be by induction.
 \end{enumerate}
 \end{proof}
 
+\section{Running time complexity}
+\subsection{Running time of DetermineRank}
+This function iterates over the whole population and compares the new point
+against every one of the existing points. This gives us $N$ comparsions. Each
+comparsion costs $O(k)$ operations, because it's required to compare $k$ components of each
+individual.
+Therefore, the running time complexity of DetermineRank is $O(N * k)$.
+\subsection{Running time of AddPoint}
+In the worst case, the new point will be added to the first non-domination
+level. In this case we'll have to update all levels during the addition of this
+point.
+Let's introduce $L$ as the average size of a non-domination level and $M$ as the 
+total number of non-domination levels.
+The \textit{while} loop can give us up to $M$ iterations.
+Obviously, \begin{equation} \label{eq:nlm}N \geq M * L \rightarrow M \leq N / L
+\end{equation}
+Inside each iteration:
+\begin{enumerate}
+  \item Procedure CutTree costs $O(\log(L))$ (according to the properties of
+  Dekart tree);
+  \item Procedure AddTree costs $O(\log(L))$ (according to the properties of
+  Dekart tree);
+  \item Calculation of $C_i$ costs $O(L * k)$ (because it's required to check
+  all the points of the next rank).
+\end{enumerate}
+So, it's $M *(\log(L) + \log(L) + L * k) = 2 * M * \log(L) + M * L * k \leq 2 *
+N * \log(L) / L + N * k$ in total.
+This function reaches its maximum at $L = 2$.
+Therefore, the running time complexity of AddPoint will be $O(N + N * k) =
+O(N * k)$.
+\subsection{Total running time}
+So, the total running time of the proposed algorithm is $O(N * (k + 1) + N * k)
+= O(N * k)$
 
 \end{document}
 
