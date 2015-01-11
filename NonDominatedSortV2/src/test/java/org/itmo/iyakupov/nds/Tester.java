@@ -22,11 +22,13 @@ public class Tester {
 	public static void main(String[] args) {
 		List<String[]> results = new ArrayList<String[]>();
 
-		testRandSq(results);
-		testRandPf(results);
-		testRandCircle(results);
-		testRandStripe(results);
-		testRandDiag(results);
+		for (int i = 0; i < 10; ++i) {
+			testRandSq(results);
+			testRandPf(results);
+			testRandCircle(results);
+			testRandStripe(results);
+			testRandDiag(results);
+		}
 		
 		try {
 			saveToCsvFile("lastRun.csv", results);

@@ -33,8 +33,12 @@ public class Population {
 		int rank = determineRank(nInd);
 		//System.err.println(rank + "_" + nInd.toString() + "_" + ranks.size());
 		Treap nTreap = new Treap(nInd, random.nextInt(), null, null);
+		
 		if (rank >= ranks.size()) {
 			ranks.add(nTreap);
+		} else if (nInd.compareDom(ranks.get(rank).getMinP()) < 0) {
+			ranks.add(rank, nTreap);
+			return;
 		} else {
 			int i = 0;
 			Int2DIndividual minP = nInd;
