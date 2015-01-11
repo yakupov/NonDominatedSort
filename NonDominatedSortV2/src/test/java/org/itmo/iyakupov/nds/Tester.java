@@ -55,7 +55,7 @@ public class Tester {
 		testRandStupid(new Point2DUniSquareGen(), "square", results);
 	}
 
-	private static void testRandStupid(ITestDataGen<Integer[][]> gena, String name, List<String[]> results) {
+	private static void testRandStupid(ITestDataGen<int[][]> gena, String name, List<String[]> results) {
 		int dim = 10;
 		try {
 			dim = Integer.parseInt(System.getProperty("uniSquareTestDataDim"));
@@ -64,7 +64,7 @@ public class Tester {
 		}
 		System.out.println("Test data (" + name + ") dimension: " + dim);
 
-		Integer[][] testData = gena.generate(dim, dim);
+		int[][] testData = gena.generate(dim, dim);
 		for (int i = 0; i < testData.length; ++i) {
 			System.out.print(Arrays.toString(testData[i]) + ' ');
 		}
@@ -83,7 +83,7 @@ public class Tester {
 		System.out.println("Test data (stripe) dimension: " + dim);
 
 		final int radius = 10;
-		Integer[][] testData = new Point2DUniStrireXPlusGen(radius).generate(dim, dim);
+		int[][] testData = new Point2DUniStrireXPlusGen(radius).generate(dim, dim);
 		for (int i = 0; i < testData.length; ++i) {
 			System.out.print(Arrays.toString(testData[i]) + ' ');
 		}
@@ -102,14 +102,14 @@ public class Tester {
 		fw.close();
 	}
 
-	private static void testGeneric(Integer[][] testData, String testName, List<String[]> results) {
+	private static void testGeneric(int[][] testData, String testName, List<String[]> results) {
 		boolean validate = "Y".equals(System.getProperty("uniSquareTestDataDim"));
 
 		System.gc();
 		System.gc();
 		Population pop = new Population();
 		long start = System.nanoTime();
-		for (Integer[] toAdd : testData) {
+		for (int[] toAdd : testData) {
 			pop.addPoint(new Int2DIndividual(toAdd));
 		}
 		long finish = System.nanoTime();
@@ -123,7 +123,7 @@ public class Tester {
 		System.gc();
 		DebENLU popEnlu = new DebENLU();
 		start = System.nanoTime();
-		for (Integer[] toAdd : testData) {
+		for (int[] toAdd : testData) {
 			popEnlu.addPoint(new Int2DIndividual(toAdd));
 		}
 		finish = System.nanoTime();
@@ -137,7 +137,7 @@ public class Tester {
 		System.gc();
 		DebNSGA2 deb = new DebNSGA2();
 		start = System.nanoTime();
-		for (Integer[] currTest: testData) {
+		for (int[] currTest: testData) {
 			deb.addPoint(currTest);
 		}
 		comparsions = deb.sort();
@@ -159,8 +159,8 @@ public class Tester {
 
 	public static void test0() {
 		Population pop = new Population();
-		Integer[][] testData = new Integer[][]{new Integer[]{4, 4}, new Integer[]{2, 6}, 
-				new Integer[]{1, 8}, new Integer[]{2, 2}, new Integer[]{2, 1}, new Integer[]{5, 5}};
+		int[][] testData = new int[][]{new int[]{4, 4}, new int[]{2, 6}, 
+				new int[]{1, 8}, new int[]{2, 2}, new int[]{2, 1}, new int[]{5, 5}};
 		/*
 		 ^y 
 		 *                    
@@ -176,7 +176,7 @@ public class Tester {
 		 */
 		// 18 21; 22; 26 44; 55
 
-		for (Integer[] toAdd : testData) {
+		for (int[] toAdd : testData) {
 			pop.addPoint(new Int2DIndividual(toAdd));
 			System.out.println(pop.toString());
 		}
@@ -185,13 +185,13 @@ public class Tester {
 
 	public static void test1() {
 		Population pop = new Population();
-		Integer[][] testData = new Integer[][]{new Integer[]{4, 9}, new Integer[]{3, 2}, 
-				new Integer[]{6, 7}, new Integer[]{2, 3}, new Integer[]{6, 2}, 
-				new Integer[]{7, 3}, new Integer[]{2, 0}, new Integer[]{0, 7}, 
-				new Integer[]{9, 1}, new Integer[]{1, 4}};
+		int[][] testData = new int[][]{new int[]{4, 9}, new int[]{3, 2}, 
+				new int[]{6, 7}, new int[]{2, 3}, new int[]{6, 2}, 
+				new int[]{7, 3}, new int[]{2, 0}, new int[]{0, 7}, 
+				new int[]{9, 1}, new int[]{1, 4}};
 		// 07 14 20; 23 32 91; 49 62; 67 73;
 
-		for (Integer[] toAdd : testData) {
+		for (int[] toAdd : testData) {
 			pop.addPoint(new Int2DIndividual(toAdd));
 			System.out.println(pop.toString());
 		}
@@ -204,13 +204,13 @@ public class Tester {
 	 */
 	public static void test2() {
 		Population pop = new Population();
-		Integer[][] testData = new Integer[][]{new Integer[]{0, 7}, 
-				new Integer[]{7, 8}, new Integer[]{3, 1}, new Integer[]{6, 6}, 
-				new Integer[]{7, 8}, new Integer[]{2, 5}, new Integer[]{2, 3}, 
-				new Integer[]{6, 5}, new Integer[]{0, 3}, new Integer[]{3, 0}, };
+		int[][] testData = new int[][]{new int[]{0, 7}, 
+				new int[]{7, 8}, new int[]{3, 1}, new int[]{6, 6}, 
+				new int[]{7, 8}, new int[]{2, 5}, new int[]{2, 3}, 
+				new int[]{6, 5}, new int[]{0, 3}, new int[]{3, 0}, };
 		// 30 03; 07 23 31; 25; 65; 66; 78;
 
-		for (Integer[] toAdd : testData) {
+		for (int[] toAdd : testData) {
 			pop.addPoint(new Int2DIndividual(toAdd));
 			System.out.println(pop.toString());
 		}

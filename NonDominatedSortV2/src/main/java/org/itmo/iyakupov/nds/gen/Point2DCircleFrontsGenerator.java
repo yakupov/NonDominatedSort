@@ -1,13 +1,13 @@
 package org.itmo.iyakupov.nds.gen;
 
-public class Point2DCircleFrontsGenerator implements ITestDataGen<Integer[][]> {
+public class Point2DCircleFrontsGenerator implements ITestDataGen<int[][]> {
 	final int nLevels = 10;
 	
 	@Override
-	public Integer[][] generate(int dim, int max) {
+	public int[][] generate(int dim, int max) {
 		int step = max / nLevels;
 		int levelSize = dim / nLevels;
-		Integer[][] res = new Integer[levelSize * nLevels][2];
+		int[][] res = new int[levelSize * nLevels][2];
 		for (int i = 0; i < nLevels; ++i) {
 			int r = i * step;
 			for (int j = 0; j < levelSize; ++j) {

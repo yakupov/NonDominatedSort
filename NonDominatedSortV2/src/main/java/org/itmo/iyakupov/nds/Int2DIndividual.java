@@ -12,7 +12,7 @@ public class Int2DIndividual {
 		this.x2 = x2;
 	}
 	
-	public Int2DIndividual(Integer[] x) {
+	public Int2DIndividual(int[] x) {
 		if (x.length != 2)
 			throw new RuntimeException("Can't cast to Int2DIndividual this array: " + Arrays.toString(x));
 		this.x1 = x[0];

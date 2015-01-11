@@ -12,12 +12,12 @@ import java.util.Random;
  */
 public class DebNSGA2 {
 	protected static class Individual {
-		Integer[] impl;
+		int[] impl;
 		int nDominating;
 		int rank;
 		List<Individual> dominated;
 		
-		public Individual(Integer[] fitnesses) {
+		public Individual(int[] fitnesses) {
 			impl = fitnesses;
 			nDominating = 0;
 			rank = 0;
@@ -30,7 +30,7 @@ public class DebNSGA2 {
 	protected Random generator = new Random();
 	protected int dominationComparsionCount = 0;
 	
-	public void addPoint(Integer[] fitnesses) {
+	public void addPoint(int[] fitnesses) {
 		pop.add(new Individual(fitnesses));
 	}
 
@@ -93,11 +93,11 @@ public class DebNSGA2 {
 		//System.err.println(rank);
 		//System.err.println(fronts.get(rank).size());
 		int nInFront = generator.nextInt(fronts.get(rank).size());
-		Integer[] res = fronts.get(rank).get(nInFront).impl;
+		int[] res = fronts.get(rank).get(nInFront).impl;
 		return new Result(rank + 1, res);
 	}
 	
-	private DomStatus dominates(Integer[] p1, Integer[] p2) {
+	private DomStatus dominates(int[] p1, int[] p2) {
 		++dominationComparsionCount;
 		
 		boolean lt = false;
