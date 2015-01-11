@@ -3,8 +3,16 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.itmo.iyakupov.nds</groupId>
 	<artifactId>NonDominatedSortV2</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>NonDominatedSortV2</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>2.3</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -38,7 +46,7 @@
 						</systemProperty>
 						<systemProperty>
 							<key>uniSquareTestDataDim</key>
-							<value>2000</value>
+							<value>5000</value>
 						</systemProperty>
 					</systemProperties>
 				</configuration>

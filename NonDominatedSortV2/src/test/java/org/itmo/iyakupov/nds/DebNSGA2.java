@@ -28,12 +28,14 @@ public class DebNSGA2 {
 	protected List<Individual> pop = new ArrayList<Individual>();
 	protected List<List<Individual>> fronts = new ArrayList<List<Individual>>();
 	protected Random generator = new Random();
+	protected int dominationComparsionCount = 0;
 	
 	public void addPoint(Integer[] fitnesses) {
 		pop.add(new Individual(fitnesses));
 	}
 
-	public void sort() {
+	public int sort() {
+		dominationComparsionCount = 0;
 		for (int i = 0; i < pop.size(); ++i) {
 			for (int j = 0; j < pop.size(); ++j) {
 				if (i != j) {
@@ -69,8 +71,9 @@ public class DebNSGA2 {
 				fronts.add(newFront);
 				currFront++;
 			} else
-				return;
+				return dominationComparsionCount;
 		}
+		return dominationComparsionCount;
 	}
 
 	private void addToFront(int i, Individual individual) {
@@ -95,6 +98,8 @@ public class DebNSGA2 {
 	}
 	
 	private DomStatus dominates(Integer[] p1, Integer[] p2) {
+		++dominationComparsionCount;
+		
 		boolean lt = false;
 		boolean gt = false;
 		for (int i = 0; i < p1.length; ++i) {

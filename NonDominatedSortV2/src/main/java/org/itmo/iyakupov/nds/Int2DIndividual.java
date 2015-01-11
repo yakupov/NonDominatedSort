@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public class Int2DIndividual {
 	private int x1, x2;
+	public static int dominationComparsionCount;
 	
 	public Int2DIndividual(int x1, int x2) {
 		super();
@@ -40,6 +41,9 @@ public class Int2DIndividual {
 	 * @return
 	 */
 	public int compareDom(Int2DIndividual o) {
+		synchronized(Int2DIndividual.class) {
+			++dominationComparsionCount;
+		}
 		int xc = Integer.compare(x1, o.x1);
 		int yc = Integer.compare(x2, o.x2);
 		return xc + yc;
