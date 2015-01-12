@@ -13,13 +13,30 @@ public class Population {
 	protected List<Treap> ranks = new ArrayList<Treap>();
 	protected Random random = new Random();
 	
-	protected int determineRank(Int2DIndividual nInd) {
+	@Deprecated
+	protected int determineRankStupid(Int2DIndividual nInd) {
 		int currRank = 0;
 		for (int i = 0; i < ranks.size(); ++i) {
 			if (ranks.get(i).dominatedBySomebody(nInd))
 				currRank = i + 1;
 			else
 				return currRank;
+		}
+		return currRank;
+	}
+	
+	protected int determineRank(Int2DIndividual nInd) {
+		int currRank = 0;
+		int l = 0;
+		int r = ranks.size() - 1;
+		while (l <= r) {
+			int i = (l + r) / 2; 
+			if (ranks.get(i).dominatedBySomebody(nInd)) {
+				currRank = i + 1;
+				l = i + 1;
+			} else {
+				r = i - 1;
+			}
 		}
 		return currRank;
 	}

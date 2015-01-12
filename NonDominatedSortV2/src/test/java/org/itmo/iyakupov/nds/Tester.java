@@ -22,12 +22,19 @@ public class Tester {
 	public static void main(String[] args) {
 		List<String[]> results = new ArrayList<String[]>();
 
-		for (int i = 0; i < 10; ++i) {
-			testRandSq(results);
-			testRandPf(results);
-			testRandCircle(results);
-			testRandStripe(results);
-			testRandDiag(results);
+		int nRuns = 1;
+		try {
+			nRuns = Integer.parseInt(System.getProperty("nRuns"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (int i = 0; i < nRuns; ++i) {
+			testRandSq(results, i);
+			testRandPf(results, i);
+			testRandCircle(results, i);
+			testRandStripe(results, i);
+			testRandDiag(results, i);
 		}
 		
 		try {
@@ -39,23 +46,23 @@ public class Tester {
 
 	}
 
-	private static void testRandDiag(List<String[]> results) {
-		testRandStupid(new Point2DDiagGenerator(), "diag", results);
+	private static void testRandDiag(List<String[]> results, int runId) {
+		testRandStupid(new Point2DDiagGenerator(), "diag", results, runId);
 	}
 
-	private static void testRandPf(List<String[]> results) {
-		testRandStupid(new Point2DParallelFrontsGenerator(), "parallel fronts", results);
+	private static void testRandPf(List<String[]> results, int runId) {
+		testRandStupid(new Point2DParallelFrontsGenerator(), "parallel fronts", results, runId);
 	}
 
-	private static void testRandCircle(List<String[]> results) {
-		testRandStupid(new Point2DCircleFrontsGenerator(), "circle fronts", results);
+	private static void testRandCircle(List<String[]> results, int runId) {
+		testRandStupid(new Point2DCircleFrontsGenerator(), "circle fronts", results, runId);
 	}
 
-	private static void testRandSq(List<String[]> results) {
-		testRandStupid(new Point2DUniSquareGen(), "square", results);
+	private static void testRandSq(List<String[]> results, int runId) {
+		testRandStupid(new Point2DUniSquareGen(), "square", results, runId);
 	}
 
-	private static void testRandStupid(ITestDataGen<int[][]> gena, String name, List<String[]> results) {
+	private static void testRandStupid(ITestDataGen<int[][]> gena, String name, List<String[]> results, int runId) {
 		int dim = 10;
 		try {
 			dim = Integer.parseInt(System.getProperty("uniSquareTestDataDim"));
@@ -70,10 +77,10 @@ public class Tester {
 		}
 		System.out.println();
 
-		testGeneric(testData, name, results);
+		testGeneric(testData, name, results, runId);
 	}
 
-	private static void testRandStripe(List<String[]> results) {
+	private static void testRandStripe(List<String[]> results, int runId) {
 		int dim = 10;
 		try {
 			dim = Integer.parseInt(System.getProperty("uniSquareTestDataDim"));
@@ -89,7 +96,7 @@ public class Tester {
 		}
 		System.out.println();
 
-		testGeneric(testData, "stripe", results);
+		testGeneric(testData, "stripe", results, runId);
 	}
 
 	public static void saveToCsvFile(String fileName, List<String[]> data) throws IOException {
@@ -102,8 +109,8 @@ public class Tester {
 		fw.close();
 	}
 
-	private static void testGeneric(int[][] testData, String testName, List<String[]> results) {
-		boolean validate = "Y".equals(System.getProperty("uniSquareTestDataDim"));
+	private static void testGeneric(int[][] testData, String testName, List<String[]> results, int runId) {
+		boolean validate = "Y".equals(System.getProperty("validate"));
 
 		System.gc();
 		System.gc();
@@ -114,10 +121,10 @@ public class Tester {
 		}
 		long finish = System.nanoTime();
 		long comparsions = Int2DIndividual.dominationComparsionCount;
-		Int2DIndividual.dominationComparsionCount = 0;
-		printResults(results, "my", start, finish, comparsions, testName);
+		printResults(results, "my", start, finish, comparsions, testName, runId);
 		if (validate)
 			pop.validate();
+		Int2DIndividual.dominationComparsionCount = 0;
 
 		System.gc();
 		System.gc();
@@ -128,10 +135,10 @@ public class Tester {
 		}
 		finish = System.nanoTime();
 		comparsions = Int2DIndividual.dominationComparsionCount;
-		Int2DIndividual.dominationComparsionCount = 0;
-		printResults(results, "ENLU", start, finish, comparsions, testName);
+		printResults(results, "ENLU", start, finish, comparsions, testName, runId);
 		if (validate)
 			popEnlu.validate();
+		Int2DIndividual.dominationComparsionCount = 0;
 
 		System.gc();
 		System.gc();
@@ -142,18 +149,18 @@ public class Tester {
 		}
 		comparsions = deb.sort();
 		finish = System.nanoTime();
-		printResults(results, "NSGA2", start, finish, comparsions, testName);
+		printResults(results, "NSGA2", start, finish, comparsions, testName, runId);
 	}
 
-	private static void printResults(List<String[]> results, String algo, long start, long finish, long comparsions, String testName) {
+	private static void printResults(List<String[]> results, String algo, long start, long finish, long comparsions, String testName, int runId) {
 		String runningTimeSecs = new BigDecimal((finish-start) / 10e9).toPlainString();
 		System.out.println(algo + " running time (s): " + runningTimeSecs);
 		System.out.println(algo + " comparsions count: " + comparsions);
 		
 		if (results.isEmpty()) {
-			results.add(new String[] {"test name", "algo", "running time (s)", "comparsions count"});
+			results.add(new String[] {"runId", "test name", "algo", "running time (s)", "comparsions count"});
 		}
-		results.add(new String[] {testName, algo, runningTimeSecs, String.valueOf(comparsions)});
+		results.add(new String[] {String.valueOf(runId), testName, algo, runningTimeSecs, String.valueOf(comparsions)});
 	}
 
 

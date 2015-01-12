@@ -26,9 +26,10 @@ public class DebENLU {
 			Set<Int2DIndividual> dominatedSet = new HashSet<Int2DIndividual>();
 
 			for (Int2DIndividual ind: ranks.get(i)) {
-				if (nInd.compareDom(ind) == 0)
+				int domComparsionResult = nInd.compareDom(ind);
+				if (domComparsionResult == 0)
 					nd = true;
-				else if (nInd.compareDom(ind) > 0) {
+				else if (domComparsionResult > 0) {
 					dominated = true;
 					break;
 				} else {

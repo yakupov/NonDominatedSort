@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.itmo.iyakupov.nds</groupId>
 	<artifactId>NonDominatedSortV2</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<name>NonDominatedSortV2</name>
 
 	<dependencies>
@@ -47,6 +47,14 @@
 						<systemProperty>
 							<key>uniSquareTestDataDim</key>
 							<value>5000</value>
+						</systemProperty>
+						<systemProperty>
+							<key>nRuns</key>
+							<value>100</value>
+						</systemProperty>
+						<systemProperty>
+							<key>validate</key>
+							<value>N</value>
 						</systemProperty>
 					</systemProperties>
 				</configuration>

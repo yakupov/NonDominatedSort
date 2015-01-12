@@ -28,10 +28,12 @@ public class Int2DIndividual {
 	}
 
 	public int compareX1(Int2DIndividual o) {
+		++dominationComparsionCount;
 		return Integer.compare(x1, o.x1);
 	}
 
 	public int compareX2(Int2DIndividual o) {
+		++dominationComparsionCount;
 		return Integer.compare(x2, o.x2);
 	}
 	
@@ -41,9 +43,9 @@ public class Int2DIndividual {
 	 * @return
 	 */
 	public int compareDom(Int2DIndividual o) {
-		synchronized(Int2DIndividual.class) {
+		//synchronized(Int2DIndividual.class) {
 			++dominationComparsionCount;
-		}
+		//}
 		int xc = Integer.compare(x1, o.x1);
 		int yc = Integer.compare(x2, o.x2);
 		return xc + yc;
@@ -51,6 +53,7 @@ public class Int2DIndividual {
 	
 	@Override
 	public boolean equals(Object o) {
+		++dominationComparsionCount;
 		if (o instanceof Int2DIndividual) {
 			Int2DIndividual oo = (Int2DIndividual)o;
 			return oo.x1 == x1 && oo.x2 == x2;
@@ -60,7 +63,7 @@ public class Int2DIndividual {
 	
 	@Override
 	public int hashCode() {
-		return (int) (0.5 * (x1 + x2) * (x1 + x2 + 1) + x2);
+		return (x1 + x2) * (x1 + x2 + 1) + x2;
 	}
 	
 	@Override
