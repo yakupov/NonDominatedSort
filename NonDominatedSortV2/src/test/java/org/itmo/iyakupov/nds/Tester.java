@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -153,7 +154,8 @@ public class Tester {
 	}
 
 	private static void printResults(List<String[]> results, String algo, long start, long finish, long comparsions, String testName, int runId) {
-		String runningTimeSecs = new BigDecimal((finish-start) / 10e9).toPlainString();
+		DecimalFormat df = new DecimalFormat("###0.0#####");
+		String runningTimeSecs = df.format((finish - start) / 1e9);
 		System.out.println(algo + " running time (s): " + runningTimeSecs);
 		System.out.println(algo + " comparsions count: " + comparsions);
 		
