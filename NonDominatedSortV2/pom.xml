@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.itmo.iyakupov.nds</groupId>
 	<artifactId>NonDominatedSortV2</artifactId>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.0.6-SNAPSHOT</version>
 	<name>NonDominatedSortV2</name>
 
 	<dependencies>
@@ -54,7 +54,7 @@
 						</systemProperty>
 						<systemProperty>
 							<key>validate</key>
-							<value>N</value>
+							<value>1</value>
 						</systemProperty>
 					</systemProperties>
 				</configuration>

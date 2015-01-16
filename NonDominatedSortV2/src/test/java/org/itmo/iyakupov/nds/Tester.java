@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,9 +19,20 @@ import org.itmo.iyakupov.nds.gen.Point2DUniStrireXPlusGen;
 import au.com.bytecode.opencsv.CSVWriter;
 
 public class Tester {
+	static int dim;
 	public static void main(String[] args) {
-		List<String[]> results = new ArrayList<String[]>();
+		boolean validateAll = "Y".equals(System.getProperty("validate"));
+		boolean validateFirst = "1".equals(System.getProperty("validate"));
 
+		List<String[]> results = new ArrayList<String[]>();
+		
+		int maxDim = 10;
+		try {
+			maxDim = Integer.parseInt(System.getProperty("uniSquareTestDataDim"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		int nRuns = 1;
 		try {
 			nRuns = Integer.parseInt(System.getProperty("nRuns"));
@@ -30,46 +40,43 @@ public class Tester {
 			e.printStackTrace();
 		}
 		
-		for (int i = 0; i < nRuns; ++i) {
-			testRandSq(results, i);
-			testRandPf(results, i);
-			testRandCircle(results, i);
-			testRandStripe(results, i);
-			testRandDiag(results, i);
+		final int step = Math.min(1000, maxDim);
+		for (dim = step; dim <= maxDim; dim += step) {
+			for (int i = 0; i < nRuns; ++i) {
+				boolean validateNow = validateAll || (validateFirst && (i == 0));
+				testRandSq(results, i, validateNow);
+				testRandPf(results, i, validateNow);
+				testRandCircle(results, i, validateNow);
+				testRandStripe(results, i, validateNow);
+				testRandDiag(results, i, validateNow);
+			}	
 		}
-		
+
 		try {
 			saveToCsvFile("lastRun.csv", results);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-
 	}
 
-	private static void testRandDiag(List<String[]> results, int runId) {
-		testRandStupid(new Point2DDiagGenerator(), "diag", results, runId);
+	private static void testRandDiag(List<String[]> results, int runId, boolean validateNow) {
+		testRandStupid(new Point2DDiagGenerator(), "diag", results, runId, validateNow);
 	}
 
-	private static void testRandPf(List<String[]> results, int runId) {
-		testRandStupid(new Point2DParallelFrontsGenerator(), "parallel fronts", results, runId);
+	private static void testRandPf(List<String[]> results, int runId, boolean validateNow) {
+		testRandStupid(new Point2DParallelFrontsGenerator(), "parallel fronts", results, runId, validateNow);
 	}
 
-	private static void testRandCircle(List<String[]> results, int runId) {
-		testRandStupid(new Point2DCircleFrontsGenerator(), "circle fronts", results, runId);
+	private static void testRandCircle(List<String[]> results, int runId, boolean validateNow) {
+		testRandStupid(new Point2DCircleFrontsGenerator(), "circle fronts", results, runId, validateNow);
 	}
 
-	private static void testRandSq(List<String[]> results, int runId) {
-		testRandStupid(new Point2DUniSquareGen(), "square", results, runId);
+	private static void testRandSq(List<String[]> results, int runId, boolean validateNow) {
+		testRandStupid(new Point2DUniSquareGen(), "square", results, runId, validateNow);
 	}
 
-	private static void testRandStupid(ITestDataGen<int[][]> gena, String name, List<String[]> results, int runId) {
-		int dim = 10;
-		try {
-			dim = Integer.parseInt(System.getProperty("uniSquareTestDataDim"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private static void testRandStupid(ITestDataGen<int[][]> gena, String name, List<String[]> results, int runId, boolean validateNow) {
 		System.out.println("Test data (" + name + ") dimension: " + dim);
 
 		int[][] testData = gena.generate(dim, dim);
@@ -78,16 +85,10 @@ public class Tester {
 		}
 		System.out.println();
 
-		testGeneric(testData, name, results, runId);
+		testGeneric(testData, name, results, runId, validateNow);
 	}
 
-	private static void testRandStripe(List<String[]> results, int runId) {
-		int dim = 10;
-		try {
-			dim = Integer.parseInt(System.getProperty("uniSquareTestDataDim"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private static void testRandStripe(List<String[]> results, int runId, boolean validateNow) {
 		System.out.println("Test data (stripe) dimension: " + dim);
 
 		final int radius = 10;
@@ -97,7 +98,7 @@ public class Tester {
 		}
 		System.out.println();
 
-		testGeneric(testData, "stripe", results, runId);
+		testGeneric(testData, "stripe", results, runId, validateNow);
 	}
 
 	public static void saveToCsvFile(String fileName, List<String[]> data) throws IOException {
@@ -110,9 +111,7 @@ public class Tester {
 		fw.close();
 	}
 
-	private static void testGeneric(int[][] testData, String testName, List<String[]> results, int runId) {
-		boolean validate = "Y".equals(System.getProperty("validate"));
-
+	private static void testGeneric(int[][] testData, String testName, List<String[]> results, int runId, boolean validate) {
 		System.gc();
 		System.gc();
 		Population pop = new Population();
@@ -150,6 +149,8 @@ public class Tester {
 		}
 		comparsions = deb.sort();
 		finish = System.nanoTime();
+		if (validate)
+			deb.validate();
 		printResults(results, "NSGA2", start, finish, comparsions, testName, runId);
 	}
 
@@ -160,9 +161,9 @@ public class Tester {
 		System.out.println(algo + " comparsions count: " + comparsions);
 		
 		if (results.isEmpty()) {
-			results.add(new String[] {"runId", "test name", "algo", "running time (s)", "comparsions count"});
+			results.add(new String[] {"runId", "test name", "dim", "algo", "running time (s)", "comparsions count"});
 		}
-		results.add(new String[] {String.valueOf(runId), testName, algo, runningTimeSecs, String.valueOf(comparsions)});
+		results.add(new String[] {String.valueOf(runId), testName, String.valueOf(dim), algo, runningTimeSecs, String.valueOf(comparsions)});
 	}
 
 
