@@ -97,6 +97,104 @@ NSGA-II и рассматривается в данной работе.
 
 \section{Алгоритмы недоминирующей сортировки}
 \subsection{Алгоритмы полной сортировки}
-TODO
-\subsection{ENLU}
+\subsubsection{NSGA}
+Простейшая реализация процедуры недоминирующей сортировки была предложена в рамках алгоритма NSGA.
+\cite{nsga1}
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\Procedure{NDS\textunderscore NSGA}{$P$}
+	\State{$i \gets 0$}
+	\While{$P \neq \emptyset$}
+		\For{$p \in P$}
+			\State{$fDominated \gets false$}
+			\For{$p' \in P$}
+				\If{$p' \prec p$}
+					\State{$fDominated \gets true$}
+				\EndIf
+			\EndFor
+			\If{$!fDominated$}
+				\State{$P[i] \gets P[i] \cup p$}
+				\State{$P \gets P \setminus p$}
+			\EndIf
+		\EndFor
+		\State{$i \gets i + 1$}
+	\EndWhile
+\EndProcedure
+\end{algorithmic}
+\caption{Алгоритм недоминирующей сортировки, входящий в NSGA.}
+\label{NDS_NSGA}
+\end{algorithm}
+Данный алгоритм $O(N)$ раз выполняет поиск всех недоминируемых особей и перемещает 
+их на текущий уровень недоминирования, удаляя их из исходной популяции.
+Каждый раз поиск недоминируемых особей выполняется за $O(KN^2)$. Итоговое время работы алгоритма
+составляет $O(KN^3)$ в худшем случае. \cite{deb_nsga2}
+
+\subsubsection{NSGA-II}
+В алгоритме NSGA-II был предложен более эффективный алгоритм сортировки, работающий за $O(KN^2)$
+в худшем случае.\cite{deb_nsga2}
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\Procedure{NDS\textunderscore NSGA2}{$P$}
+	\For{$p \in P$}
+		\State{$S_p \gets \emptyset$}
+		\State{$n_p \gets 0$}
+		\For{$p' \in P$}
+			\If{$p \prec p'$}
+				\State{$S_p \gets S_p \cup p'$}
+			\ElsIf{$p' \prec p$}
+				\State{$n_p \gets n_p + 1$}
+			\EndIf
+		\EndFor
+		\If{$n_p = 0$}
+			\State{$p_rank \gets 1$}
+			\State{$F_1 \gets F_1 \cup p$}
+		\EndIf
+	\EndFor
+	\State{$i \gets 1$}
+	\While{$F_i \neq \emptyset$}
+		\State{$Q \gets \emptyset$}
+		\For{$p \in F_i$}
+			\For{$q \in S_p$}
+				\State{$n_q \gets n_q - 1$}
+				\If{$n_q = 0$}
+					\State{$p_rank \gets i + 1$}
+					\State{$Q \gets Q \cup q$}
+				\EndIf
+			\EndFor
+		\EndFor
+		\State{$i \gets i + 1$}
+		\State{$F_i \gets Q$}
+	\EndWhile
+\EndProcedure
+\end{algorithmic}
+\caption{Алгоритм недоминирующей сортировки, входящий в NSGA-II.}
+\label{NDS_NSGA2}
+\end{algorithm}
+
+Первая часть алгоритма (работающая за $O(KN^2)$) находит все недоминируемые точки способом,
+аналогичным используемому в алгоритме NSGA. Для каждой точки сохраняется множество точек,
+над которыми она доминирует, а также число точек, доминирующих над ней.
+
+На основании этих данных, вторая часть алгоритма распределяет точки (для которых число
+доминирующех точек, еще не распределенных по уровням недоминирования, равно нулю) по уровням
+недоминирования за $O(KN^2)$).
+
+Итоговое время работы алгоритма - $O(KN^2)$) в худшем случае.
+
+\subsubsection{Быстрые алгоритмы}
+Кунгом \textit{с соавт.} (Kung \textit{et al}) \cite{kung} был предложен алгоритм, позволяющий 
+выполнять поиск недоминируемых особей за $O(N \log^{K - 1} N)$, где K - размерность пространства, 
+и N - размер популяции. Данный алгоритм можно использовать для выполнения недоминирующей сортировки \cite{max_me_ss_nsga2}, 
+последовательно находя недоминируемые решения и удаляя их их популяции, но итоговое время работы
+алгоритма составит $O(N^2 \log^{K - 1} N)$ в худшем случае.
+
+Дженсеном \textit{с соавт.} (Jensen \textit{et al}) \cite{jensen} был предложен алгоритм, позволяющий 
+выполнять недоминирующую сортировку за $O(N \log^{K - 1} N)$ в худшем случае, исходя из предположения,
+что для любых двух точек ни одна из координат не может оказаться одинаковой.
+
+Наконец, Буздалов \textit{с соавт.} модифицировали алгоритм Дженсена таким образом, чтобы
+время работы в худшем случае составило $O(N \log^{K - 1} N)$ без каких-либо дополнительных ограничений
+на значения точек \cite{max_sort}.
+
+\subsection{Алгоритм инкрементальной сортировки ENLU}
 TODO
