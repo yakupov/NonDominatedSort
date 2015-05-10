@@ -6,3 +6,106 @@
 
 \section{Конфигурация эксперимента}
 \label{test_conf}
+Было проведено сравнение с ENLU и недоминирующей сортировкой из NSGA-II.
+Все алгоритмы тестировались на одном и том же, случайно сгенерированном множестве точек.
+Инкрементальные алгоритмы тестировались путем последовательного добавления всех точек в структуру данных
+и замера итогового времени работы всех вставок.
+Для классической сортировки измерялось время сортировки всей популяции.
+
+\subsection{Тестовые данные}
+Использовались следующие виды входных данных:
+\begin{itemize}
+    \item ``квадрат'':   генерируются $N$ случайных точек из квадрата $N \times N$;
+    \item ``параллель'': генерируются $N$ случайных точек, $N/2$ из которых лежат на прямой
+                        $y = N - x$, остальные - на $y = N - x + 1$;
+    \item ``diag1'':    генерируется последовательность из $N$ точек $(x, x)$,
+                        начиная с максимального $x$;
+    \item ``diag2'':    генерируется последовательность из $N$ точек $(x, x + 5)$ и $(x + 5, x)$ 
+						одна за другой, начиная с максимального $x$;
+    \item ``П'':   генерируется ``последовательно-перпендикулярная'' структура (напоминающая 
+				   повернутую на 45 градусов букву \textsc{П}) следующего вида:
+                        $N / 6$ точек на прямой $y = x + 5$,
+                        $N / 6$ точек на прямой $y = x - 5$, 
+                        $N / 3$ точек на прямой $y = N/3 - x - 4$, and
+                        $N / 3$ точек на прямой $y = N/3 - x - 6$,
+                   Пример такой структуры приведен на Рис.~\ref{parper-fig}.
+\end{itemize}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.4\textwidth]{pic/scheme.3}
+\caption{Пример структуры ``П'' при $N = 24$}\label{parper-fig}
+\end{figure}
+
+\section{Результаты тестирования}
+
+Измерялось время работы и число сравнений.
+Предложенный алгоритм показал значительно лучшие результаты чем сравниваемые решения.
+
+\newpage
+
+\newcommand\scalesize{0.77}
+\newcommand\figalign\centering
+%\newcommand\figalign\raggedleft
+
+\begin{figure}
+\figalign
+\includegraphics[scale=\scalesize]{pic/plots.1}
+\caption{Число сравнений для ``квадрата''}\label{plot-square-comp}
+\end{figure}
+
+\begin{figure}
+\figalign
+\includegraphics[scale=\scalesize]{pic/plots.3}
+\caption{Число сравнений для ``параллели''}\label{plot-parallel-comp}
+\end{figure}
+
+\begin{figure}
+\figalign
+\includegraphics[scale=\scalesize]{pic/plots.5}
+\caption{Число сравнений для ``diag1''}\label{plot-diag1-comp}
+\end{figure}
+
+\begin{figure}
+\figalign
+\includegraphics[scale=\scalesize]{pic/plots.7}
+\caption{Число сравнений для ``diag2''}\label{plot-diag2-comp}
+\end{figure}
+
+\begin{figure}[b]
+\figalign
+\includegraphics[scale=\scalesize]{pic/plots.9}
+\caption{Число сравнений для ``П''}\label{plot-parper-comp}
+\end{figure}
+
+\newpage
+
+\begin{figure}
+\figalign
+\includegraphics[scale=\scalesize]{pic/plots.2}
+\caption{Время работы для ``квадрата''}\label{plot-square-time}
+\end{figure}
+
+\begin{figure}
+\figalign
+\includegraphics[scale=\scalesize]{pic/plots.4}
+\caption{Время работы для ``параллели''}\label{plot-parallel-time}
+\end{figure}
+
+\begin{figure}
+\figalign
+\includegraphics[scale=\scalesize]{pic/plots.6}
+\caption{Время работы для ``diag1''}\label{plot-diag1-time}
+\end{figure}
+
+\begin{figure}
+\figalign
+\includegraphics[scale=\scalesize]{pic/plots.8}
+\caption{Время работы для ``diag2''}\label{plot-diag2-time}
+\end{figure}
+
+\begin{figure}[b]
+\figalign
+\includegraphics[scale=\scalesize]{pic/plots.10}
+\caption{Время работы для ``П''}\label{plot-parper-time}
+\end{figure}
