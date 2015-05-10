@@ -6,18 +6,13 @@
 \usepackage[utf8]{inputenc}
 
 \usepackage{algorithm}
-%\usepackage{algorithmic}
-%\usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
-
-
 
 \usepackage[english,russian]{babel}
 
 %\usepackage[backend=biber,sorting=none,sortcites=true,bibstyle=sty/gost71,maxnames=99,citestyle=numeric-comp,babel=other]{biblatex}
 \usepackage[backend=biber,sorting=none,sortcites=true,maxnames=99,citestyle=numeric-comp,babel=other]{biblatex}
-%\usepackage[backend=biber]{biblatex}
 
 \defbibenvironment{bibliography}
   {\list
@@ -35,8 +30,26 @@
 \usepackage{csquotes}
 %\usepackage{expdlist}
 %\usepackage[nottoc,notbib]{tocbibind}
+
 \usepackage[pdftex]{graphicx}
-\graphicspath{{pic/}}
+%\graphicspath{{pic/}} %!!!!!!!!!!!!!!!!!!!!!!!11
+
+\DeclareGraphicsRule{.1}{mps}{*}{}
+\DeclareGraphicsRule{.2}{mps}{*}{}
+\DeclareGraphicsRule{.3}{mps}{*}{}
+\DeclareGraphicsRule{.4}{mps}{*}{}
+\DeclareGraphicsRule{.5}{mps}{*}{}
+\DeclareGraphicsRule{.6}{mps}{*}{}
+\DeclareGraphicsRule{.7}{mps}{*}{}
+\DeclareGraphicsRule{.8}{mps}{*}{}
+\DeclareGraphicsRule{.9}{mps}{*}{}
+\DeclareGraphicsRule{.10}{mps}{*}{}
+\DeclareGraphicsRule{.11}{mps}{*}{}
+\DeclareGraphicsRule{.12}{mps}{*}{}
+\DeclareGraphicsRule{.13}{mps}{*}{}
+\DeclareGraphicsRule{.14}{mps}{*}{}
+
+
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
@@ -85,7 +98,11 @@
 
 %\newtheorem{introduction}[theorem]{Introduction}
 
-\renewcommand{\proof}{\\\textbf{Доказательство.}~}
+\renewcommand{\proof}{\textbf{Доказательство.}~}
+
+
+\algblockx{Structure}{EndStructure}[1]{\textbf{structure}~\textsc{#1}}{\textbf{end structure}}
+
 
 \def\startprog{\begin{lstlisting}[language=Java,basicstyle=\normalsize\ttfamily]}
 
@@ -163,6 +180,7 @@
 \input{chapters/intro.tex}
 \input{chapters/chapter1.tex}
 \input{chapters/chapter2.tex}
+\input{chapters/chapter3.tex}
 
 \printbibliography
 

@@ -1,0 +1,46 @@
+%&latex
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[english,russian]{babel}
+
+\begin{document}
+
+\gdef\mpxshipout{\shipout\hbox\bgroup
+  \setbox0=\hbox\bgroup}
+\gdef\stopmpxshipout{\egroup  \dimen0=\ht0 \advance\dimen0\dp0
+  \dimen1=\ht0 \dimen2=\dp0
+  \setbox0=\hbox\bgroup
+    \box0
+    \ifnum\dimen0>0 \vrule width1sp height\dimen1 depth\dimen2 
+    \else \vrule width1sp height1sp depth0sp\relax
+    \fi\egroup
+  \ht0=0pt \dp0=0pt \box0 \egroup}
+\mpxshipout% line 195 C:/Users/Ilia/Documents/ImaMaster/pic/scheme.mp
+0 (1)%
+\stopmpxshipout
+\mpxshipout% line 196 C:/Users/Ilia/Documents/ImaMaster/pic/scheme.mp
+1 (2)%
+\stopmpxshipout
+\mpxshipout% line 197 C:/Users/Ilia/Documents/ImaMaster/pic/scheme.mp
+2 (1)%
+\stopmpxshipout
+\mpxshipout% line 198 C:/Users/Ilia/Documents/ImaMaster/pic/scheme.mp
+3 (8)%
+\stopmpxshipout
+\mpxshipout% line 199 C:/Users/Ilia/Documents/ImaMaster/pic/scheme.mp
+5 (1)%
+\stopmpxshipout
+\mpxshipout% line 200 C:/Users/Ilia/Documents/ImaMaster/pic/scheme.mp
+4 (4)%
+\stopmpxshipout
+\mpxshipout% line 201 C:/Users/Ilia/Documents/ImaMaster/pic/scheme.mp
+7 (1)%
+\stopmpxshipout
+\mpxshipout% line 202 C:/Users/Ilia/Documents/ImaMaster/pic/scheme.mp
+6 (2)%
+\stopmpxshipout
+% line 377 C:/Users/Ilia/Documents/ImaMaster/pic/scheme.mp
+\end{document}
+
+\end{document}
